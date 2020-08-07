@@ -22,7 +22,7 @@ public class User implements Serializable {
 
     public User(String studentName, String role) {
         this.studentName = studentName;
-        this.role = ADMIN.name();
+        this.role = role;
     }
 
     public User(String studentName, String role, String password) {

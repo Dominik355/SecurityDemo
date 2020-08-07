@@ -15,12 +15,6 @@ spring:
       path: /h2-console
       settings:
         web-allow-others: false
-  session:
-    store-type: jdbc
-    jdbc:
-      initialize-schema: always
-      schema: classpath:org/springframework/session/jdbc/schema-h2.sql
-      table-name: SPRING_SESSION
 
 logging:
   level:
@@ -29,5 +23,5 @@ logging:
 server:
   servlet:
     session:
-      timeout: 10m
+      timeout: 30m
 

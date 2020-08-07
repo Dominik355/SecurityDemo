@@ -1,9 +1,11 @@
 package com.example.securityDemo.Security;
 
+import com.example.securityDemo.Security.userStatistics.ActiveUserStore;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,19 +17,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
-
 import java.util.concurrent.TimeUnit;
-
-import static com.example.securityDemo.Security.authorization.UserRole.*;
-import static com.example.securityDemo.Security.authorization.UserPermission.*;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(
         prePostEnabled = true,
         securedEnabled = true,
-        jsr250Enabled = true
-)
+        jsr250Enabled = true)
+@Order(1)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -43,13 +41,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private LogoutSuccessHandler myLogoutSuccessHandler;
 
     @Bean
+    public ServletListenerRegistrationBean<HttpSessionEventPublisher> httpSessionEventPublisher() {
+        return new ServletListenerRegistrationBean<HttpSessionEventPublisher>(new HttpSessionEventPublisher());
+    }
+
+    @Bean
     public SessionRegistry sessionRegistry() {
         return new SessionRegistryImpl();
     }
 
     @Bean
-    public HttpSessionEventPublisher httpSessionEventPublisher() {
-        return new HttpSessionEventPublisher();
+    public ActiveUserStore getActiveUserStore() {
+        return new ActiveUserStore();
     }
 
     @Override
@@ -59,12 +62,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 //.and()
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/", "index", "/css/*", "/js/*", "/h2-console/**", "/s/**").permitAll()
-                .antMatchers("/api/students/**").hasAnyRole(STUDENT.name(), ADMIN.name())
-                .antMatchers(HttpMethod.DELETE, "/management/api/**").hasAuthority(TEACHER_WRITE.name())
-                .antMatchers(HttpMethod.POST, "/management/api/**").hasAuthority(TEACHER_WRITE.name())
-                .antMatchers(HttpMethod.PUT, "/management/api/**").hasAuthority(TEACHER_WRITE.name())
-                .antMatchers("/management/api/**").hasAnyRole(ADMIN.name(), ADMIN.name())
+                .antMatchers("/", "index", "/css/*", "/js/*", "/h2-console/**", "/s/**")
+                .permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -84,7 +83,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .logout()
                     .logoutUrl("/logout")
                     .clearAuthentication(true)
-                    .invalidateHttpSession(true)
+                    .invalidateHttpSession(false) //if true - attributes are errased before logoutSuccesfullHandler is called, so valueUnbound is never called
                     .deleteCookies("JSESSIONID", "remember-me")
                     .logoutSuccessUrl("/login")
                     .logoutSuccessHandler(myLogoutSuccessHandler)

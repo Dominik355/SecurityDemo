@@ -1,11 +1,12 @@
 package com.example.securityDemo.Security.userStatistics;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ActiveUserStore {
+public class ActiveUserStore implements Serializable {
 
     public List<LoggedUser> users;
 

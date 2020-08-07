@@ -17,6 +17,7 @@ public class RestSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+    //ewrwerwerwrwrw
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {

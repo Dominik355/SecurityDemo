@@ -1,25 +1,18 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:testdb
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
+    url: jdbc:postgresql://localhost:5432/demo?createDatabaseIfNotExist=true&autoReconnect=true&useSSL=false
+    username: dominik
+    password: pirlo21
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: create
-    #show-sql: true
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-      settings:
-        web-allow-others: false
+      ddl-auto: update
+    show-sql: true
+
   session:
     store-type: redis
     redis:
       flush-mode: on_save
-      namespace: spring:session
+      namespace: security_session
   redis:
     host: localhost
     port: 6379
@@ -30,5 +23,16 @@ logging:
 server:
   servlet:
     session:
-      timeout: 10
+      timeout: 30
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*' #povoli vsetky endpointy actuator-a
+  trace:
+    http:
+      include: PRINCIPAL, TIME_TAKEN, SESSION_ID, REQUEST_HEADERS, RESPONSE_HEADERS, COOKIE_HEADERS
+
 

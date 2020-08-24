@@ -1,7 +1,7 @@
 package com.example.securityDemo.Security;
 
 import com.example.securityDemo.Models.Database.User;
-import com.example.securityDemo.Security.authorization.UserRole;
+import com.example.securityDemo.Security.securityEnums.UserRole;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;

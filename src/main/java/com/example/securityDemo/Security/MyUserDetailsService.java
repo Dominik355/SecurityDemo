@@ -4,7 +4,7 @@ import com.example.securityDemo.Models.Database.User;
 import com.example.securityDemo.Models.Transfer.UserDTO;
 import com.example.securityDemo.Models.Transfer.UserRegistration;
 import com.example.securityDemo.Repositories.UserRepository;
-import com.example.securityDemo.Security.authorization.UserRole;
+import com.example.securityDemo.Security.securityEnums.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,9 +12,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import static com.example.securityDemo.Security.authorization.UserRole.*;
+
 import javax.annotation.PostConstruct;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -26,7 +25,7 @@ public class MyUserDetailsService implements UserDetailsService {
     @Qualifier("real")
     @Autowired
     private UserRepository userRepository;
-
+/*
     private static final List<User> USERS = Arrays.asList(
             new User("Emil Maly", STUDENT.name()),
             new User("Robo Krok", STUDENT.name()),
@@ -40,7 +39,7 @@ public class MyUserDetailsService implements UserDetailsService {
                 s.setPassword(passwordEncoder.encode(s.getStudentName().split(" ")[0])));
         userRepository.saveAll(USERS);
     }
-
+*/
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return new MyUserDetails(userRepository.findByStudentName(username)
@@ -53,7 +52,7 @@ public class MyUserDetailsService implements UserDetailsService {
     }
 
     public List<User> getAllStudents() {
-        return USERS;
+        return userRepository.findAll();
     }
 
     public String createUser(UserRegistration userRegistration){

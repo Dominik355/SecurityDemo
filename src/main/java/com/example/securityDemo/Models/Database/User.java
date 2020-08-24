@@ -1,16 +1,13 @@
 package com.example.securityDemo.Models.Database;
 
 import com.example.securityDemo.Models.Transfer.UserRegistration;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
 
-import static com.example.securityDemo.Security.authorization.UserRole.*;
+import static com.example.securityDemo.Security.securityEnums.UserRole.*;
 
 @Entity
+@Table(name = "users")
 public class User implements Serializable {
 
     @Id

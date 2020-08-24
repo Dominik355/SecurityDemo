@@ -1,6 +1,8 @@
 package com.example.securityDemo.Security.userStatistics;
 
+import com.example.securityDemo.Repositories.redis.ActiveUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.DefaultRedirectStrategy;
@@ -13,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,20 +25,29 @@ import java.util.logging.Logger;
 public class AuthenticationSuccess implements AuthenticationSuccessHandler {
 
     @Autowired
-    private ActiveUserStore activeUserStore;
+    private ActiveUserRepository activeUserRepository;
 
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request
             , HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-
-        HttpSession session = request.getSession(false);
-        if(session != null) {
-            session.setAttribute("user", new LoggedUser(authentication.getName(), activeUserStore));
+        if(authentication != null) {
+            HttpSession session = request.getSession(true);
+            if(session != null) {
+                LoggedUser user = new LoggedUser(
+                        authentication.getName()
+                        , activeUserRepository
+                        , new Timestamp(session.getCreationTime())
+                        , authentication instanceof RememberMeAuthenticationToken ?
+                        "Remember-me" : "Login");
+                session.setAttribute("user"
+                        , user);
+                Logger.getGlobal().info("Attribute has been set, user: " + user);
+            }  else
+                Logger.getGlobal().info("Session is null");
         }
         handleLogin(request, response, authentication);
-
     }
 
     protected void handleLogin(HttpServletRequest request

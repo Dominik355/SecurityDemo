@@ -1,39 +1,46 @@
 package com.example.securityDemo.Security.userStatistics;
 
 
+import com.example.securityDemo.Models.ActiveUser;
+import com.example.securityDemo.Repositories.redis.ActiveUserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.Transient;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.logging.Logger;
 
 @Component
 public class LoggedUser implements HttpSessionBindingListener, Serializable {
 
     private String username;
     private Timestamp loginTime;
-    private ActiveUserStore activeUserStore;
+    @Transient
+    private ActiveUserRepository activeUserStore;
+    private String how;
 
-    public LoggedUser(String username, ActiveUserStore activeUserStore) {
-        this.activeUserStore = activeUserStore;
+    public LoggedUser(String username, ActiveUserRepository activeUserStore, Timestamp loginTime, String how) {
         this.loginTime = new Timestamp(System.currentTimeMillis());
+        this.activeUserStore = activeUserStore;
         this.username = username;
+        this.how = how;
     }
 
     public LoggedUser() {}
 
     @Override
     public void valueBound(HttpSessionBindingEvent event) {
-        activeUserStore.getUsers().stream().filter(u -> u.getUsername().equals(((LoggedUser) event.getValue()).getUsername()));
-        activeUserStore.addUser((LoggedUser) event.getValue());
-        System.out.println("value BOUND called: " + ((LoggedUser) event.getValue()).getUsername());
+        this.activeUserStore.save(new ActiveUser((LoggedUser) event.getValue()));
+        Logger.getGlobal().info("value BOUND called: " + ((LoggedUser) event.getValue()).getUsername());
     }
 
     @Override
     public void valueUnbound(HttpSessionBindingEvent event) {
-        this.activeUserStore.getUsers().remove(((LoggedUser) event.getValue()).getUsername());
-        System.out.println("value UN-BOUND called: " + ((LoggedUser) event.getValue()).getUsername());
+        this.activeUserStore.deleteByName(((LoggedUser) event.getValue()).getUsername());
+        Logger.getGlobal().info("value UN-BOUND called: " + ((LoggedUser) event.getValue()).getUsername());
     }
 
     public String getUsername() {
@@ -44,12 +51,13 @@ public class LoggedUser implements HttpSessionBindingListener, Serializable {
         this.username = username;
     }
 
-    public ActiveUserStore getActiveUserStore() {
-        return activeUserStore;
+
+    public Timestamp getLoginTime() {
+        return loginTime;
     }
 
-    public void setActiveUserStore(ActiveUserStore activeUserStore) {
-        this.activeUserStore = activeUserStore;
+    public String getHow() {
+        return how;
     }
 
     @Override
@@ -57,6 +65,7 @@ public class LoggedUser implements HttpSessionBindingListener, Serializable {
         return "LoggedUser{" +
                 "username='" + username + '\'' +
                 ", loginTime=" + loginTime +
+                ", how=" + how +
                 '}';
     }
 }

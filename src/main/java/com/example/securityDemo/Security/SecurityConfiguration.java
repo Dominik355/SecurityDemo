@@ -1,22 +1,25 @@
 package com.example.securityDemo.Security;
 
-import com.example.securityDemo.Security.userStatistics.ActiveUserStore;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
+import org.springframework.boot.actuate.trace.http.InMemoryHttpTraceRepository;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
+
 import java.util.concurrent.TimeUnit;
 
 @Configuration
@@ -25,7 +28,6 @@ import java.util.concurrent.TimeUnit;
         prePostEnabled = true,
         securedEnabled = true,
         jsr250Enabled = true)
-@Order(1)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -41,6 +43,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private LogoutSuccessHandler myLogoutSuccessHandler;
 
     @Bean
+    public SimpleUrlAuthenticationFailureHandler simpleUrlAuthenticationFailureHandler() {
+        return new SimpleUrlAuthenticationFailureHandler();
+    }
+
+    @Bean
     public ServletListenerRegistrationBean<HttpSessionEventPublisher> httpSessionEventPublisher() {
         return new ServletListenerRegistrationBean<HttpSessionEventPublisher>(new HttpSessionEventPublisher());
     }
@@ -51,8 +58,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public ActiveUserStore getActiveUserStore() {
-        return new ActiveUserStore();
+    public HttpTraceRepository httpTraceRepository() {
+        return new InMemoryHttpTraceRepository();
     }
 
     @Override
@@ -62,7 +69,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 //.and()
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/", "index", "/css/*", "/js/*", "/h2-console/**", "/s/**")
+                .antMatchers("/", "index", "/css/*", "/js/*", "/h2-console/**", "/s/**", "/test/**", "/actuator/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
@@ -74,9 +81,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .successHandler(myAuthenticationSuccessHandler)
                     .passwordParameter("password")
                     .usernameParameter("username")
+                    .failureUrl("/login?error=tudyCestaNevede")
+                    .loginProcessingUrl("/signin")
+                    .failureHandler(simpleUrlAuthenticationFailureHandler())
                 .and()
                 .rememberMe()
                     .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(21))
+                    .authenticationSuccessHandler(myAuthenticationSuccessHandler)
                     .key("SomeSecuredKey")
                     .rememberMeParameter("remember-me")
                 .and()
@@ -89,6 +100,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .logoutSuccessHandler(myLogoutSuccessHandler)
                 .and()
                 .sessionManagement(s -> s
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                         .maximumSessions(1)
                         .maxSessionsPreventsLogin(true)
                         .expiredUrl("/login"));

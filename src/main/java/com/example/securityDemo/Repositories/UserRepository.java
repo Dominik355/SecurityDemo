@@ -9,8 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository("real")
-public interface UserRepository
-        extends JpaRepository<User, Integer> {
+public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByStudentName(String studentName);
 

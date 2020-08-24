@@ -1,4 +1,4 @@
-package com.example.securityDemo.Security.authorization;
+package com.example.securityDemo.Security.securityEnums;
 
 public enum UserPermission {
 

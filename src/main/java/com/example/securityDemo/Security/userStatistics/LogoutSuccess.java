@@ -19,10 +19,14 @@ public class LogoutSuccess implements LogoutSuccessHandler {
             , Authentication authentication) throws IOException, ServletException {
         HttpSession session = request.getSession();
         if(session != null) {
-            if(session.getAttribute("user") == null) System.out.println("user is null");
-            session.removeAttribute("user");
+            if(session.getAttribute("user") == null) {
+                System.out.println("User logged out after session expired");
+            } else {
+                session.removeAttribute("user");
+            }
             session.invalidate();
         }
+        response.sendRedirect("/login");
     }
 
 }

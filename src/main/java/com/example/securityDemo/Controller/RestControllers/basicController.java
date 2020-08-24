@@ -1,15 +1,19 @@
 package com.example.securityDemo.Controller.RestControllers;
 
+import com.example.securityDemo.Models.ActiveUser;
 import com.example.securityDemo.Models.Transfer.UserRegistration;
+import com.example.securityDemo.Repositories.redis.ActiveUserRepository;
 import com.example.securityDemo.Security.MyUserDetailsService;
 import com.example.securityDemo.Models.Transfer.UserDTO;
-import com.example.securityDemo.Security.userStatistics.ActiveUserStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/api")
@@ -19,7 +23,7 @@ public class basicController {
     private MyUserDetailsService myUserDetailsService;
 
     @Autowired
-    private ActiveUserStore activeUserStore;
+    private ActiveUserRepository activeUserRepository;
 
     @GetMapping(path = {"{studentId}"})
     public UserDTO getStudent(@PathVariable int studentId) {
@@ -33,7 +37,8 @@ public class basicController {
 
     @GetMapping(path = {"/"})
     public List<String> getUsers() {
-        return activeUserStore.showUsers();
+        return StreamSupport.stream((activeUserRepository.findAll()).spliterator(), false)
+                .map(Object::toString).collect(Collectors.toList());
     }
 
     @GetMapping(path = {"/info"})

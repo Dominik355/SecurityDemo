@@ -1,8 +1,8 @@
-package com.example.securityDemo.Security.authorization;
+package com.example.securityDemo.Security.securityEnums;
 
 import com.google.common.collect.Sets;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import static com.example.securityDemo.Security.authorization.UserPermission.*;
+import static com.example.securityDemo.Security.securityEnums.UserPermission.*;
 import java.util.Set;
 import java.util.stream.Collectors;
 

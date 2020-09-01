@@ -26,6 +26,7 @@ public class CustomSessionListener implements HttpSessionListener {
         Logger.getGlobal().info("Session destroyed: " + se.getSession().getId()
                 + ", source: " + se.getSource());
         se.getSession().removeAttribute("user");
+
     }
 
 }

@@ -37,7 +37,6 @@ public class AuthenticationSuccess implements AuthenticationSuccessHandler {
             if(session != null) {
                 LoggedUser user = new LoggedUser(
                         authentication.getName()
-                        , activeUserRepository
                         , new Timestamp(session.getCreationTime())
                         , authentication instanceof RememberMeAuthenticationToken ?
                         "Remember-me" : "Login");

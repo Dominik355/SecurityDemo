@@ -1,12 +1,12 @@
 package com.example.securityDemo;
 
+import com.example.securityDemo.Models.Car;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.*;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.data.redis.serializer.*;
 
 @Configuration
 public class RedisConfig {
@@ -26,26 +26,22 @@ public class RedisConfig {
         return factory;
     }
 
+    @Bean
     public RedisTemplate<String, Object> redisTemplate() {
         RedisTemplate<String, Object>  template = new RedisTemplate<>();
         template.setConnectionFactory(myLettuceConnectionFactory());
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new StringRedisSerializer());
         template.setHashKeySerializer(new GenericJackson2JsonRedisSerializer());
         template.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+        template.setValueSerializer(new GenericToStringSerializer<Object>(Object.class));
+        template.setKeySerializer(new GenericToStringSerializer<Object>(Object.class));
         template.afterPropertiesSet();
         return template;
     }
 
-    public StringRedisTemplate stringRedisTemplate() {
-        StringRedisTemplate template = new StringRedisTemplate();
-        template.setConnectionFactory(myLettuceConnectionFactory());
-        return template;
-    }
 
     @Bean
     public HashOperations hashOperations(){
-        return this.stringRedisTemplate().opsForHash();
+        return this.redisTemplate().opsForHash();
     }
 
     @Bean

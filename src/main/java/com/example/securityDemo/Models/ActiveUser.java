@@ -8,15 +8,15 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.sql.Timestamp;
 
-@RedisHash
+@RedisHash("active_user")
 public class ActiveUser {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private String name;
     private Timestamp loginTime;
     private String loginType;
+    private boolean rememberMeActive;
 
     public ActiveUser(String name, Timestamp loginTime, String loginType) {
         this.name = name;
@@ -27,7 +27,7 @@ public class ActiveUser {
     public ActiveUser(LoggedUser loggedUser) {
         this.name = loggedUser.getUsername();
         this.loginTime = loggedUser.getLoginTime();
-        this.loginType = loggedUser.getHow();
+        this.loginType = loggedUser.getLoginType();
     }
 
     public int getId() {
@@ -56,5 +56,13 @@ public class ActiveUser {
 
     public void setLoginType(String loginType) {
         this.loginType = loginType;
+    }
+
+    public boolean isRememberMeActive() {
+        return rememberMeActive;
+    }
+
+    public void setRememberMeActive(boolean rememberMeActive) {
+        this.rememberMeActive = rememberMeActive;
     }
 }

@@ -1,14 +1,17 @@
 package com.example.securityDemo.Controller.RestControllers;
 
+import com.example.securityDemo.Models.ActiveUser;
 import com.example.securityDemo.Models.Car;
 import com.example.securityDemo.Models.RedisModel;
 import com.example.securityDemo.Repositories.CarRepo;
 import com.example.securityDemo.Repositories.RedisRepo;
 import com.example.securityDemo.Repositories.SessionRepo;
+import com.example.securityDemo.Repositories.redis.ActiveUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
+import java.sql.Timestamp;
 
 @RestController
 @RequestMapping("/test/")
@@ -23,16 +26,8 @@ public class trying {
     @Autowired
     private SessionRepo sessionRepo;
 
-    @PostMapping(path = {"/sendArray"})
-    public ResponseEntity sendArray(@RequestBody Integer[][] matrix) {
-        for (int i = 0; i < matrix.length; i++){
-            for (int j = 0; j < matrix.length; j++){
-                System.out.print(matrix[i][j]+" ");
-            }
-            System.out.println();
-        }
-        return ResponseEntity.ok("matrix received");
-    }
+    @Autowired
+    private ActiveUserRepository activeUserRepository;
 
     @GetMapping(path = {"/getSessions"})
     public ResponseEntity getSessions(HttpServletRequest request) {
@@ -60,6 +55,7 @@ public class trying {
 
     @PostMapping(path = {"/postCar"})
     public ResponseEntity postCar(@RequestBody Car car) {
+        activeUserRepository.save(new ActiveUser("name", new Timestamp(System.currentTimeMillis()), "type"));
         return ResponseEntity.ok(this.carRepo.saveCar(car));
     }
 

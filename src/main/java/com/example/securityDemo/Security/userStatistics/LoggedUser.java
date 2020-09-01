@@ -18,28 +18,25 @@ public class LoggedUser implements HttpSessionBindingListener, Serializable {
 
     private String username;
     private Timestamp loginTime;
-    @Transient
-    private ActiveUserRepository activeUserStore;
-    private String how;
+    private String loginType;
 
-    public LoggedUser(String username, ActiveUserRepository activeUserStore, Timestamp loginTime, String how) {
+    public LoggedUser(String username,Timestamp loginTime, String loginType) {
         this.loginTime = new Timestamp(System.currentTimeMillis());
-        this.activeUserStore = activeUserStore;
         this.username = username;
-        this.how = how;
+        this.loginType = loginType;
     }
 
     public LoggedUser() {}
 
     @Override
     public void valueBound(HttpSessionBindingEvent event) {
-        this.activeUserStore.save(new ActiveUser((LoggedUser) event.getValue()));
+        //this.activeUserStore.save(new ActiveUser((LoggedUser) event.getValue()));
         Logger.getGlobal().info("value BOUND called: " + ((LoggedUser) event.getValue()).getUsername());
     }
 
     @Override
     public void valueUnbound(HttpSessionBindingEvent event) {
-        this.activeUserStore.deleteByName(((LoggedUser) event.getValue()).getUsername());
+        //this.activeUserStore.deleteByName(((LoggedUser) event.getValue()).getUsername());
         Logger.getGlobal().info("value UN-BOUND called: " + ((LoggedUser) event.getValue()).getUsername());
     }
 
@@ -51,13 +48,12 @@ public class LoggedUser implements HttpSessionBindingListener, Serializable {
         this.username = username;
     }
 
-
     public Timestamp getLoginTime() {
         return loginTime;
     }
 
-    public String getHow() {
-        return how;
+    public String getLoginType() {
+        return loginType;
     }
 
     @Override
@@ -65,7 +61,7 @@ public class LoggedUser implements HttpSessionBindingListener, Serializable {
         return "LoggedUser{" +
                 "username='" + username + '\'' +
                 ", loginTime=" + loginTime +
-                ", how=" + how +
+                ", loginType=" + loginType +
                 '}';
     }
 }

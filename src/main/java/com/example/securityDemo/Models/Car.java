@@ -4,28 +4,30 @@ import org.springframework.data.redis.core.RedisHash;
 
 import java.io.Serializable;
 
-@RedisHash("Car")
+@RedisHash("car")
 public class Car implements Serializable {
 
-    Integer id;
-    String name;
-    String type;
+    private static final long serialVersionUID = 1L;
+
+    private int id;
+    private String name;
+    private String type;
 
     public Car() {
 
     }
 
-    public Car(Integer id, String name, String type) {
+    public Car(int id, String name, String type) {
         this.id = id;
         this.name = name;
         this.type = type;
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 

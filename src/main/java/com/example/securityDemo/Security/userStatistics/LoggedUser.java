@@ -28,18 +28,6 @@ public class LoggedUser implements HttpSessionBindingListener, Serializable {
 
     public LoggedUser() {}
 
-    @Override
-    public void valueBound(HttpSessionBindingEvent event) {
-        //this.activeUserStore.save(new ActiveUser((LoggedUser) event.getValue()));
-        Logger.getGlobal().info("value BOUND called: " + ((LoggedUser) event.getValue()).getUsername());
-    }
-
-    @Override
-    public void valueUnbound(HttpSessionBindingEvent event) {
-        //this.activeUserStore.deleteByName(((LoggedUser) event.getValue()).getUsername());
-        Logger.getGlobal().info("value UN-BOUND called: " + ((LoggedUser) event.getValue()).getUsername());
-    }
-
     public String getUsername() {
         return username;
     }

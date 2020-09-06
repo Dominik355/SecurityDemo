@@ -22,7 +22,7 @@ logging:
 server:
   servlet:
     session:
-      timeout: 30
+      timeout: 180
   port: 8080
 
 management:

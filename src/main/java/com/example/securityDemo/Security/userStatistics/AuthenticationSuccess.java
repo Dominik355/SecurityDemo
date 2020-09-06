@@ -1,6 +1,7 @@
 package com.example.securityDemo.Security.userStatistics;
 
 import com.example.securityDemo.Repositories.redis.ActiveUserRepository;
+import com.example.securityDemo.Security.securityEnums.LoginEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,13 +26,14 @@ import java.util.logging.Logger;
 public class AuthenticationSuccess implements AuthenticationSuccessHandler {
 
     @Autowired
-    private ActiveUserRepository activeUserRepository;
+    private ActiveUsersService activeUsersService;
 
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request
             , HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+
         if(authentication != null) {
             HttpSession session = request.getSession(true);
             if(session != null) {
@@ -39,14 +41,14 @@ public class AuthenticationSuccess implements AuthenticationSuccessHandler {
                         authentication.getName()
                         , new Timestamp(session.getCreationTime())
                         , authentication instanceof RememberMeAuthenticationToken ?
-                        "Remember-me" : "Login");
-                session.setAttribute("user"
-                        , user);
-                Logger.getGlobal().info("Attribute has been set, user: " + user);
+                        LoginEnum.REMEMBER_ME.name() : LoginEnum.LOGIN.name());
+                session.setAttribute(LoginEnum.USER.name(), user);
+                activeUsersService.addActiveUser(user, session.getId());
             }  else
                 Logger.getGlobal().info("Session is null");
         }
         handleLogin(request, response, authentication);
+
     }
 
     protected void handleLogin(HttpServletRequest request

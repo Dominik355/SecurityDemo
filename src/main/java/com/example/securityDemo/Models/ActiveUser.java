@@ -2,51 +2,53 @@ package com.example.securityDemo.Models;
 
 import com.example.securityDemo.Security.userStatistics.LoggedUser;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.sql.Date;
 import java.sql.Timestamp;
 
+/**
+ * I have to use Date instead of Timestamp, because there is no default converter  for byte[] <-> Timestamp
+ */
 @RedisHash("active_user")
 public class ActiveUser {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
-    private String name;
-    private Timestamp loginTime;
+    private String id;
+    private String userName;
+    private Date loginTime;
     private String loginType;
-    private boolean rememberMeActive;
-
-    public ActiveUser(String name, Timestamp loginTime, String loginType) {
-        this.name = name;
-        this.loginTime = loginTime;
-        this.loginType = loginType;
-    }
+    @Indexed
+    private String sessionId;
+    private Date lastAccess;
+    private String lastAddress;
 
     public ActiveUser(LoggedUser loggedUser) {
-        this.name = loggedUser.getUsername();
-        this.loginTime = loggedUser.getLoginTime();
+        this.userName = loggedUser.getUsername();
+        this.loginTime = new Date(loggedUser.getLoginTime().getTime());
         this.loginType = loggedUser.getLoginType();
     }
 
-    public int getId() {
-        return id;
+    public ActiveUser() {
     }
 
-    public String getName() {
-        return name;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public Timestamp getLoginTime() {
+    public Date getLoginTime() {
         return loginTime;
     }
 
-    public void setLoginTime(Timestamp loginTime) {
+    public void setLoginTime(Date loginTime) {
         this.loginTime = loginTime;
     }
 
@@ -58,11 +60,27 @@ public class ActiveUser {
         this.loginType = loginType;
     }
 
-    public boolean isRememberMeActive() {
-        return rememberMeActive;
+    public Date getLastAccess() {
+        return lastAccess;
     }
 
-    public void setRememberMeActive(boolean rememberMeActive) {
-        this.rememberMeActive = rememberMeActive;
+    public void setLastAccess(Date lastAccess) {
+        this.lastAccess = lastAccess;
+    }
+
+    public String getLastAddress() {
+        return lastAddress;
+    }
+
+    public void setLastAddress(String lastAddress) {
+        this.lastAddress = lastAddress;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 }

@@ -1,6 +1,8 @@
 package com.example.securityDemo.Models.Database;
 
 import com.sun.istack.NotNull;
+import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.sql.Timestamp;

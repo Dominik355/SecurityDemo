@@ -1,12 +1,16 @@
 package com.example.securityDemo;
 
-import com.example.securityDemo.Models.Car;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.core.*;
-import org.springframework.data.redis.serializer.*;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.convert.*;
+
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 
 @Configuration
 public class RedisConfig {
@@ -26,6 +30,31 @@ public class RedisConfig {
         return factory;
     }
 
+    @Bean
+    public RedisTemplate<?, ?> redisTemplate() {
+        RedisTemplate<byte[], byte[]> template = new RedisTemplate<>();
+        template.setConnectionFactory(myLettuceConnectionFactory());
+        return template;
+    }
+
+    @Bean
+    public RedisCustomConversions redisCustomConversions() {
+        return new RedisCustomConversions(Arrays.asList(new Converter<byte[], OffsetDateTime>() {
+
+            @Override
+            public OffsetDateTime convert(byte[] source) {
+                return OffsetDateTime.parse(new String(source), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+            }
+        }, new Converter<OffsetDateTime, byte[]>() {
+            @Override
+            public byte[] convert(OffsetDateTime source) {
+                return source.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME).getBytes();
+            }
+        }
+                ));
+    }
+
+/*
     @Bean
     public RedisTemplate<String, Object> redisTemplate() {
         RedisTemplate<String, Object>  template = new RedisTemplate<>();
@@ -49,4 +78,5 @@ public class RedisConfig {
         return this.redisTemplate().opsForList();
     }
 
+*/
 }

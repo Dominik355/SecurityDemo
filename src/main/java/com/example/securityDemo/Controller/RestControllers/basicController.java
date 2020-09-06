@@ -22,9 +22,6 @@ public class basicController {
     @Autowired
     private MyUserDetailsService myUserDetailsService;
 
-    @Autowired
-    private ActiveUserRepository activeUserRepository;
-
     @GetMapping(path = {"{studentId}"})
     public UserDTO getStudent(@PathVariable int studentId) {
         return myUserDetailsService.loadStudentById(studentId);
@@ -33,18 +30,6 @@ public class basicController {
     @PostMapping(path = {"/createUser"})
     public ResponseEntity createStudent(@RequestBody UserRegistration user) {
         return ResponseEntity.ok(myUserDetailsService.createUser(user));
-    }
-
-    @GetMapping(path = {"/"})
-    public List<String> getUsers() {
-        return StreamSupport.stream((activeUserRepository.findAll()).spliterator(), false)
-                .map(Object::toString).collect(Collectors.toList());
-    }
-
-    @GetMapping(path = {"/info"})
-    public ResponseEntity getUsersInfo(HttpServletRequest request) {
-        request.getSession().removeAttribute("user");
-        return ResponseEntity.ok("Attribute user removed");
     }
 
 }

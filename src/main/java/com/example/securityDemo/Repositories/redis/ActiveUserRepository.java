@@ -6,8 +6,10 @@ import org.springframework.stereotype.Repository;
 import java.io.Serializable;
 
 @Repository
-public interface ActiveUserRepository extends CrudRepository<ActiveUser, Integer> {
+public interface ActiveUserRepository extends CrudRepository<ActiveUser, String> {
 
-    ActiveUser deleteByName(String name);
+    ActiveUser deleteBySessionId(String sessionId);
+
+    ActiveUser findBySessionId(String sessionId);
 
 }

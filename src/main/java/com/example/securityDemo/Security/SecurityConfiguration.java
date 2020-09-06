@@ -1,6 +1,5 @@
 package com.example.securityDemo.Security;
 
-import com.example.securityDemo.Security.userStatistics.CustomRememberMeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
 import org.springframework.boot.actuate.trace.http.InMemoryHttpTraceRepository;
@@ -17,15 +16,12 @@ import org.springframework.security.config.annotation.web.configurers.RememberMe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
-import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
@@ -144,14 +140,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         JdbcTokenRepositoryImpl database = new JdbcTokenRepositoryImpl();
         database.setDataSource(dataSource);
         return database;
-    }
-
-    @Bean
-    public AbstractRememberMeServices rememberMeServices() {
-        CustomRememberMeService rememberMeServices =
-                new CustomRememberMeService(rememberMeKey, myUserDetailsService, persistentTokenRepository());
-        rememberMeServices.setAlwaysRemember(true);
-        return rememberMeServices;
     }
 
 }
